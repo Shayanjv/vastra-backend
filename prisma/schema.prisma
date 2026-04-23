@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                  String            @id @default(uuid()) @db.Uuid
+  firebase_uid        String            @unique
+  phone               String?
+  email               String?
+  name                String
+  city                String?
+  state               String?
+  profile_photo_url   String?
+  skin_tone           String?
+  body_type           String?
+  style_preferences   String[]          @default([])
+  is_premium          Boolean           @default(false)
+  premium_expires_at  DateTime?
+  fcm_token           String?
+  is_active           Boolean           @default(true)
+  is_deleted          Boolean           @default(false)
+  last_login          DateTime?
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+  clothes             Cloth[]
+  outfit_suggestions  OutfitSuggestion[]
+  wash_records        WashRecord[]
+  quality_history     QualityHistory[]
+  occasions           Occasion[]
+  saved_outfits       SavedOutfit[]
+  wedding_plans       WeddingPlan[]
+  notifications       Notification[]
+  user_preferences    UserPreference?
+
+  @@index([firebase_uid])
+  @@index([phone])
+  @@index([email])
+  @@index([is_deleted])
+  @@map("users")
+}
+
+model Cloth {
+  id                String           @id @default(uuid()) @db.Uuid
+  user_id           String           @db.Uuid
+  name              String
+  category          String
+  fabric_type       String
+  color_primary     String
+  color_secondary   String?
+  pattern           String?
+  brand             String?
+  purchase_price    Decimal?         @db.Decimal(10, 2)
+  purchase_date     DateTime?
+  occasions         String[]         @default([])
+  season            String[]         @default([])
+  size              String?
+  care_instructions String?
+  photo_urls        String[]         @default([])
+  wear_count        Int              @default(0)
+  wash_count        Int              @default(0)
+  last_worn_at      DateTime?
+  last_washed_at    DateTime?
+  quality_score     Decimal          @default(100) @db.Decimal(5, 2)
+  is_active         Boolean          @default(true)
+  is_deleted        Boolean          @default(false)
+  created_at        DateTime         @default(now())
+  updated_at        DateTime         @updatedAt
+  user              User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  wash_records      WashRecord[]
+  quality_history   QualityHistory[]
+
+  @@index([user_id])
+  @@index([category])
+  @@index([fabric_type])
+  @@index([is_deleted])
+  @@map("clothes")
+}
+
+model OutfitSuggestion {
+  id                  String     @id @default(uuid()) @db.Uuid
+  user_id             String     @db.Uuid
+  occasion            String
+  clothes_ids         String[]   @default([])
+  style_score         Decimal    @db.Decimal(5, 2)
+  color_harmony_score Decimal    @db.Decimal(5, 2)
+  ai_explanation      String     @db.Text
+  weather_data        Json?
+  date_suggested      DateTime   @default(now())
+  is_worn             Boolean    @default(false)
+  worn_at             DateTime?
+  is_saved            Boolean    @default(false)
+  is_deleted          Boolean    @default(false)
+  created_at          DateTime   @default(now())
+  updated_at          DateTime   @updatedAt
+  user                User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  occasions           Occasion[]
+
+  @@index([user_id, date_suggested])
+  @@index([is_deleted])
+  @@map("outfit_suggestions")
+}
+
+model QualityHistory {
+  id                   String   @id @default(uuid()) @db.Uuid
+  cloth_id             String   @db.Uuid
+  user_id              String   @db.Uuid
+  quality_score        Decimal  @db.Decimal(5, 2)
+  wear_count_at_record Int
+  wash_count_at_record Int
+  notes                String?
+  recorded_at          DateTime
+  is_deleted           Boolean  @default(false)
+  created_at           DateTime @default(now())
+  cloth                Cloth    @relation(fields: [cloth_id], references: [id], onDelete: Cascade)
+  user                 User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([cloth_id, user_id])
+  @@index([is_deleted])
+  @@map("quality_history")
+}
+
+model Occasion {
+  id                   String            @id @default(uuid()) @db.Uuid
+  user_id              String            @db.Uuid
+  occasion_type        String
+  outfit_suggestion_id String?           @db.Uuid
+  outfit_date          DateTime
+  notes                String?
+  is_deleted           Boolean           @default(false)
+  created_at           DateTime          @default(now())
+  updated_at           DateTime          @updatedAt
+  user                 User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  outfit_suggestion    OutfitSuggestion? @relation(fields: [outfit_suggestion_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([outfit_suggestion_id])
+  @@index([is_deleted])
+  @@map("occasions")
+}
+
+model Notification {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  title      String
+  body       String
+  type       String
+  is_read    Boolean  @default(false)
+  data       Json?
+  is_deleted Boolean  @default(false)
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, is_read])
+  @@index([is_deleted])
+  @@map("notifications")
+}
+
+model WashRecord {
+  id                String   @id @default(uuid()) @db.Uuid
+  cloth_id          String   @db.Uuid
+  user_id           String   @db.Uuid
+  wash_type         String
+  wash_date         DateTime
+  water_temperature String?
+  notes             String?
+  is_deleted        Boolean  @default(false)
+  created_at        DateTime @default(now())
+  cloth             Cloth    @relation(fields: [cloth_id], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([cloth_id, user_id])
+  @@index([is_deleted])
+  @@map("wash_records")
+}
+
+model SavedOutfit {
+  id          String   @id @default(uuid()) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String
+  clothes_ids String[] @default([])
+  occasion_tag String?
+  style_score Decimal? @db.Decimal(5, 2)
+  is_deleted  Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([is_deleted])
+  @@map("saved_outfits")
+}
+
+model WeddingPlan {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  event_name String
+  start_date DateTime
+  end_date   DateTime
+  functions  Json
+  is_deleted Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([is_deleted])
+  @@map("wedding_plans")
+}
+
+model UserPreference {
+  id                  String   @id @default(uuid()) @db.Uuid
+  user_id             String   @unique @db.Uuid
+  morning_outfit_time String   @default("07:00")
+  laundry_reminder    Boolean  @default(true)
+  quality_alerts      Boolean  @default(true)
+  weekly_report       Boolean  @default(true)
+  language            String   @default("en")
+  is_deleted          Boolean  @default(false)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  user                User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([is_deleted])
+  @@map("user_preferences")
+}

@@ -1,0 +1,22 @@
+export const INDIAN_STATIC_OCCASIONS = [
+  "Daily Wear",
+  "Office/Formal",
+  "College",
+  "Casual Outing",
+  "Family Gathering",
+  "Temple Visit",
+  "Wedding",
+  "Sangeet",
+  "Mehendi",
+  "Reception",
+  "Festival Celebration",
+  "Diwali",
+  "Eid",
+  "Navratri",
+  "Durga Puja",
+  "Pongal",
+  "Onam",
+  "Ganesh Chaturthi",
+  "Karwa Chauth",
+  "Party"
+] as const;
