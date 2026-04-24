@@ -8,6 +8,7 @@
     "node": ">=20.0.0"
   },
   "scripts": {
+    "postinstall": "npx prisma generate",
     "dev": "nodemon",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
