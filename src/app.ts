@@ -33,14 +33,27 @@ const allowedOrigins = environment.CORS_ORIGIN.split(",").map((origin) => origin
 
 const corsOptions: CorsOptions = {
   origin: (requestOrigin, callback) => {
-    if (!requestOrigin || allowedOrigins.includes(requestOrigin)) {
+    // Allow mobile app requests (no origin header)
+    // Mobile apps like Flutter don't send CORS origin header
+    if (!requestOrigin) {
       callback(null, true);
       return;
     }
 
+    // Allow whitelisted web/backend origins
+    if (allowedOrigins.includes(requestOrigin)) {
+      callback(null, true);
+      return;
+    }
+
+    // Block disallowed origins (web only, not mobile)
     callback(new Error("CORS policy blocked this origin"), false);
   },
-  credentials: true
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Request-ID"],
+  exposedHeaders: ["X-Request-ID"],
+  maxAge: 86400 // 24 hours
 };
 
 app.use(helmet());
