@@ -23,6 +23,7 @@ import weatherRoutes from "./modules/weather/weather.routes";
 import userRoutes from "./modules/user/user.routes";
 import logger from "./utils/logger.util";
 import { sendSuccess } from "./utils/response.util";
+import { startupWithTimeouts } from "./utils/startup.util";
 
 const app = express();
 let httpServer: Server | null = null;
@@ -178,13 +179,15 @@ const startServer = async (): Promise<void> => {
   try {
     initializeSentry();
 
-    await connectDatabase();
-    await connectRedis();
+    // Start database and Redis with timeouts
+    // Database is critical; Redis is optional (graceful degradation)
+    await startupWithTimeouts(connectDatabase, connectRedis);
 
     httpServer = app.listen(environment.PORT, () => {
       logger.info(`Server is running on port ${environment.PORT}`, {
         endpoint: "startup",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        environment: environment.NODE_ENV
       });
     });
   } catch (error) {
