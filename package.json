@@ -3,25 +3,26 @@
   "version": "1.0.0",
   "description": "Production-ready backend API for Vastra, an Indian AI wardrobe manager app.",
   "private": true,
-  "main": "dist/app.js",
+  "main": "dist/src/app.js",
   "engines": {
-    "node": ">=20.0.0"
+    "node": "^20.19 || ^22.12 || >=24.0"
   },
   "scripts": {
-    "postinstall": "npx prisma generate",
+    "postinstall": "prisma generate --config prisma/prisma.config.ts",
     "dev": "nodemon",
-    "build": "npm run postinstall && tsc -p tsconfig.json",
+    "build": "npm run prisma:generate && tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
-    "start": "npx prisma generate && node dist/app.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma migrate deploy --skip-generate",
-    "prisma:studio": "prisma studio"
+    "start": "npm run prisma:generate && node dist/src/app.js",
+    "prisma:generate": "prisma generate --config prisma/prisma.config.ts",
+    "prisma:migrate": "prisma migrate dev --config prisma/prisma.config.ts",
+    "prisma:deploy": "prisma migrate deploy --config prisma/prisma.config.ts",
+    "prisma:studio": "prisma studio --config prisma/prisma.config.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@imgly/background-removal-node": "^1.4.5",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
     "@sentry/node": "^9.10.0",
     "axios": "^1.9.0",
     "bcryptjs": "^2.4.3",
@@ -37,7 +38,8 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "openai": "^6.34.0",
-    "prisma": "^5.22.0",
+    "pg": "^8.20.0",
+    "prisma": "^7.8.0",
     "uuid": "^10.0.0",
     "winston": "^3.15.0",
     "zod": "^3.23.8"
@@ -50,6 +52,7 @@
     "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.1",
+    "@types/pg": "^8.20.0",
     "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",

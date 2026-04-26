@@ -4,7 +4,7 @@ import type { Server } from "http";
 import helmet from "helmet";
 import morgan from "morgan";
 import { v4 as uuidv4 } from "uuid";
-import prisma, { connectDatabase } from "./config/database";
+import { connectDatabase, disconnectDatabase } from "./config/database";
 import environment from "./config/environment";
 import redis, { connectRedis } from "./config/redis";
 import { initializeSentry } from "./config/sentry";
@@ -149,7 +149,7 @@ const shutdown = async (): Promise<void> => {
       });
     }
 
-    await prisma.$disconnect();
+    await disconnectDatabase();
 
     if (redis.status === "ready") {
       await redis.quit();
