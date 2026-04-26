@@ -8,15 +8,15 @@
     "node": "^20.19 || ^22.12 || >=24.0"
   },
   "scripts": {
-    "postinstall": "prisma generate --config prisma/prisma.config.ts",
     "dev": "nodemon",
-    "build": "npm run prisma:generate && tsc -p tsconfig.json",
-    "typecheck": "tsc --noEmit",
-    "start": "npm run prisma:generate && node dist/src/app.js",
-    "prisma:generate": "prisma generate --config prisma/prisma.config.ts",
-    "prisma:migrate": "prisma migrate dev --config prisma/prisma.config.ts",
-    "prisma:deploy": "prisma migrate deploy --config prisma/prisma.config.ts",
-    "prisma:studio": "prisma studio --config prisma/prisma.config.ts"
+    "build": "tsc",
+    "start": "node dist/src/app.js",
+    "postinstall": "npx prisma generate --config prisma/prisma.config.ts",
+    "prisma:generate": "npx prisma generate --config prisma/prisma.config.ts",
+    "prisma:migrate": "npx prisma migrate deploy --config prisma/prisma.config.ts",
+    "prisma:deploy": "npx prisma migrate deploy --config prisma/prisma.config.ts",
+    "prisma:studio": "npx prisma studio --config prisma/prisma.config.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
