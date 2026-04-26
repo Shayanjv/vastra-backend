@@ -10,12 +10,12 @@
   "scripts": {
     "postinstall": "npx prisma generate",
     "dev": "nodemon",
-    "build": "tsc -p tsconfig.json",
+    "build": "npm run postinstall && tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "start": "npx prisma generate && node dist/app.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma migrate deploy",
+    "prisma:deploy": "prisma migrate deploy --skip-generate",
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
