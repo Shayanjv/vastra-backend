@@ -9,8 +9,8 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
-    "start": "node dist/src/app.js",
+    "build": "npm run prisma:generate && tsc -p tsconfig.json",
+    "start": "npm run prisma:generate && node dist/src/app.js",
     "postinstall": "npx prisma generate --config prisma/prisma.config.ts",
     "prisma:generate": "npx prisma generate --config prisma/prisma.config.ts",
     "prisma:migrate": "npx prisma migrate deploy --config prisma/prisma.config.ts",
