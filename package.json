@@ -11,11 +11,11 @@
     "dev": "nodemon",
     "build": "npm run prisma:generate && tsc -p tsconfig.json",
     "start": "npm run prisma:generate && node dist/src/app.js",
-    "postinstall": "npx prisma generate --config prisma/prisma.config.ts",
-    "prisma:generate": "npx prisma generate --config prisma/prisma.config.ts",
-    "prisma:migrate": "npx prisma migrate deploy --config prisma/prisma.config.ts",
-    "prisma:deploy": "npx prisma migrate deploy --config prisma/prisma.config.ts",
-    "prisma:studio": "npx prisma studio --config prisma/prisma.config.ts",
+    "postinstall": "node ./node_modules/prisma/build/index.js generate --config prisma/prisma.config.ts",
+    "prisma:generate": "node ./node_modules/prisma/build/index.js generate --config prisma/prisma.config.ts",
+    "prisma:migrate": "node ./node_modules/prisma/build/index.js migrate deploy --config prisma/prisma.config.ts",
+    "prisma:deploy": "node ./node_modules/prisma/build/index.js migrate deploy --config prisma/prisma.config.ts",
+    "prisma:studio": "node ./node_modules/prisma/build/index.js studio --config prisma/prisma.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
