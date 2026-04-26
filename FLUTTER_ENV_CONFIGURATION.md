@@ -22,7 +22,7 @@ OPENWEATHER_API_KEY=your-openweather-api-key
 OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
 
 # ===== IMAGE UPLOAD =====
-CLOUDINARY_CLOUD_NAME=vastraRoot
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
 
 # ===== OPTIONAL: AI PROVIDERS =====
 # Only needed if implementing premium AI suggestions
