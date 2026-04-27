@@ -21,6 +21,7 @@ export const globalRateLimiter = rateLimit({
   max: environment.RATE_LIMIT_MAX,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { ip: false },
   skip: isLocalhost,
   keyGenerator: getClientIp,
   handler: (request, response, _next, options) => {
@@ -39,6 +40,7 @@ export const authRateLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { ip: false },
   skip: isLocalhost,
   keyGenerator: getClientIp,
   handler: (_request, response, _next, options) => {
