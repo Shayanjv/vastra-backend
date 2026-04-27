@@ -24,6 +24,7 @@ import userRoutes from "./modules/user/user.routes";
 import logger from "./utils/logger.util";
 import { sendSuccess } from "./utils/response.util";
 import { startupWithTimeouts } from "./utils/startup.util";
+import listEndpoints from "express-list-endpoints";
 
 const app = express();
 let httpServer: Server | null = null;
@@ -55,6 +56,10 @@ const corsOptions: CorsOptions = {
   exposedHeaders: ["X-Request-ID"],
   maxAge: 86400 // 24 hours
 };
+
+// Trust first proxy hop (Azure, Railway, Render reverse proxies)
+// Required for correct client IP in rate limiting and logging
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors(corsOptions));
@@ -124,6 +129,13 @@ app.use("/api/v1/notifications", requireAuth, notificationRoutes);
 app.use("/api/v1/uploads", requireAuth, uploadRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/v1/weather", weatherRoutes);
+
+if (environment.NODE_ENV !== "production") {
+  app.get("/api/routes", (_request: Request, response: Response) => {
+    const endpoints = listEndpoints(app);
+    return response.json({ routes: endpoints });
+  });
+}
 
 app.use(notFoundHandler);
 app.use(errorHandler);
@@ -202,6 +214,14 @@ const startServer = async (): Promise<void> => {
         timestamp: new Date().toISOString(),
         environment: environment.NODE_ENV
       });
+      console.log("=== REGISTERED ROUTES ===");
+      const endpoints = listEndpoints(app);
+      endpoints.forEach(endpoint => {
+        endpoint.methods.forEach(method => {
+          console.log(`${method} ${endpoint.path}`);
+        });
+      });
+      console.log("========================");
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown startup error";
