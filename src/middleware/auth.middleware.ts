@@ -13,6 +13,15 @@ export const requireAuth = (
     const authorization = request.headers.authorization;
 
     if (!authorization) {
+      logger.warn("Authentication failed", {
+        endpoint: request.originalUrl,
+        method: request.method,
+        requestId: request.requestId,
+        code: "AUTH_003",
+        reason: "Authorization header is required",
+        timestamp: new Date().toISOString()
+      });
+
       return sendError(
         response,
         401,
@@ -25,6 +34,15 @@ export const requireAuth = (
     const [scheme, token] = authorization.split(" ");
 
     if (scheme !== "Bearer" || !token) {
+      logger.warn("Authentication failed", {
+        endpoint: request.originalUrl,
+        method: request.method,
+        requestId: request.requestId,
+        code: "AUTH_003",
+        reason: "Authorization header must be in Bearer token format",
+        timestamp: new Date().toISOString()
+      });
+
       return sendError(
         response,
         401,

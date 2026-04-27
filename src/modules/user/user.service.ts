@@ -497,12 +497,33 @@ class UserService {
 
   public async create(
     userId: string,
-    input: { name: string; description?: string }
+    input: {
+      name?: string;
+      description?: string;
+      city?: string;
+      state?: string;
+      profile_photo_url?: string;
+      skin_tone?: string;
+      body_type?: string;
+      style_preferences?: string[];
+    }
   ): Promise<UserRecord> {
     try {
-      const updatedUser = await this.updateProfile(userId, {
-        name: input.name
-      });
+      const profileUpdateInput: UpdateUserProfileInput = {
+        name: input.name,
+        city: input.city,
+        state: input.state,
+        profile_photo_url: input.profile_photo_url,
+        skin_tone: input.skin_tone,
+        body_type: input.body_type,
+        style_preferences: input.style_preferences
+      };
+
+      const hasProfileUpdate = Object.values(profileUpdateInput).some((fieldValue) => fieldValue !== undefined);
+
+      const updatedUser = hasProfileUpdate
+        ? await this.updateProfile(userId, profileUpdateInput)
+        : await this.getProfile(userId);
 
       return this.toLegacyUserRecord(updatedUser, input.description ?? null);
     } catch (error) {

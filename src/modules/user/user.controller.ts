@@ -101,7 +101,13 @@ export const createUserRecord = async (
 
     const createdRecord = await userService.create(userId, {
       name: request.body.name,
-      description: request.body.description
+      description: request.body.description,
+      city: request.body.city,
+      state: request.body.state,
+      profile_photo_url: request.body.profile_photo_url,
+      skin_tone: request.body.skin_tone,
+      body_type: request.body.body_type,
+      style_preferences: request.body.style_preferences
     });
 
     return sendSuccess(response, 201, "User record created successfully", createdRecord);

@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { ZodTypeAny } from "zod";
+import logger from "../utils/logger.util";
 import { sendError } from "../utils/response.util";
 
 interface ValidationSchema {
@@ -43,6 +44,14 @@ export const validateRequest = (schema: ValidationSchema) => {
     }
 
     if (errors.length > 0) {
+      logger.warn("Request validation failed", {
+        endpoint: request.originalUrl,
+        method: request.method,
+        requestId: request.requestId,
+        validationErrors: errors,
+        timestamp: new Date().toISOString()
+      });
+
       return sendError(
         response,
         400,
