@@ -4,8 +4,30 @@ import pg from "pg";
 import environment from "./environment";
 import logger from "../utils/logger.util";
 
+/**
+ * Strips sslmode from the connection string so that pg.Pool
+ * uses ONLY our explicit ssl config (rejectUnauthorized: false).
+ * The sslmode=require in the URL causes pg to treat it as verify-full,
+ * which rejects Supabase's self-signed certificate chain.
+ */
+const sanitizeConnectionString = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.delete("sslmode");
+    return parsed.toString();
+  } catch {
+    // If URL parsing fails, do a regex strip as fallback
+    return url
+      .replace(/[?&]sslmode=[^&]*/g, "")
+      .replace(/\?&/, "?")
+      .replace(/\?$/, "");
+  }
+};
+
+const cleanConnectionString = sanitizeConnectionString(environment.DATABASE_URL);
+
 const pool = new pg.Pool({
-  connectionString: environment.DATABASE_URL,
+  connectionString: cleanConnectionString,
   ssl: {
     rejectUnauthorized: false
   },
