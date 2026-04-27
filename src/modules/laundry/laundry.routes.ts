@@ -24,6 +24,18 @@ const laundryRoutes = Router();
 laundryRoutes.get("/queue", validateRequest({ query: laundryQueueQuerySchema }), getLaundryQueue);
 laundryRoutes.post("/mark-washed", validateRequest({ body: markWashedSchema }), markLaundryAsWashed);
 laundryRoutes.get("/history", validateRequest({ query: laundryHistoryQuerySchema }), getLaundryHistory);
+laundryRoutes.get(
+  "/history/:clothId",
+  async (req, res) => {
+    res.status(501).json({
+      success: false,
+      message: "Laundry history per cloth not yet implemented",
+      error: "LAUNDRY_HISTORY_CLOTH_NOT_IMPLEMENTED",
+      code: "LAUNDRY_HISTORY_001",
+      timestamp: new Date().toISOString()
+    });
+  }
+);
 laundryRoutes.get("/stats", validateRequest({ query: laundryStatsQuerySchema }), getLaundryStats);
 laundryRoutes.get(
   "/tips/:fabricType",

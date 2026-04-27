@@ -4,6 +4,7 @@ import { AppError } from "../../utils/error.util";
 import logger from "../../utils/logger.util";
 import { sendError, sendSuccess } from "../../utils/response.util";
 import authService from "./auth.service";
+import userService from "../user/user.service";
 
 const getCookieValue = (cookieHeader: string | undefined, key: string): string | null => {
   if (!cookieHeader) {
@@ -52,6 +53,14 @@ const getRefreshTokenFromRequest = (request: Request): string | null => {
   const bearerToken = getBearerToken(request.headers.authorization);
 
   return bodyToken ?? cookieToken ?? bearerToken;
+};
+
+const resolveUserId = (request: Request): string => {
+  const userId = request.user?.userId;
+  if (!userId) {
+    throw new AppError("User context missing", 401, "AUTH_003");
+  }
+  return userId;
 };
 
 export const firebaseVerify = async (request: Request, response: Response): Promise<Response> => {
@@ -187,6 +196,44 @@ export const me = async (request: Request, response: Response): Promise<Response
       response,
       appError.statusCode,
       "Failed to fetch user profile",
+      appError.message,
+      appError.code
+    );
+  }
+};
+
+export const signup = async (request: Request, response: Response): Promise<Response> => {
+  try {
+    const userId = resolveUserId(request);
+
+    const createdRecord = await userService.create(userId, {
+      name: request.body.name,
+      description: request.body.description,
+      city: request.body.city,
+      state: request.body.state,
+      profile_photo_url: request.body.profile_photo_url,
+      skin_tone: request.body.skin_tone,
+      body_type: request.body.body_type,
+      style_preferences: request.body.style_preferences
+    });
+
+    return sendSuccess(response, 201, "Signup and profile completion successful", createdRecord);
+  } catch (error) {
+    const appError =
+      error instanceof AppError ? error : new AppError("Signup failed", 500, "INTERNAL_500");
+
+    logger.warn("Signup controller failure", {
+      endpoint: "auth/signup",
+      requestId: request.requestId,
+      error: appError.message,
+      code: appError.code,
+      timestamp: new Date().toISOString()
+    });
+
+    return sendError(
+      response,
+      appError.statusCode,
+      "Signup failed",
       appError.message,
       appError.code
     );

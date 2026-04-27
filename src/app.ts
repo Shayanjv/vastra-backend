@@ -21,6 +21,7 @@ import qualityRoutes from "./modules/quality/quality.routes";
 import uploadRoutes from "./modules/upload/upload.routes";
 import weatherRoutes from "./modules/weather/weather.routes";
 import userRoutes from "./modules/user/user.routes";
+import homeRoutes from "./modules/home/home.routes";
 import logger from "./utils/logger.util";
 import { sendSuccess } from "./utils/response.util";
 import { startupWithTimeouts } from "./utils/startup.util";
@@ -129,6 +130,8 @@ app.use("/api/v1/notifications", requireAuth, notificationRoutes);
 app.use("/api/v1/uploads", requireAuth, uploadRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/v1/weather", weatherRoutes);
+app.use("/api/home", requireAuth, homeRoutes);
+app.use("/api/v1/home", requireAuth, homeRoutes);
 
 if (environment.NODE_ENV !== "production") {
   app.get("/api/routes", (_request: Request, response: Response) => {

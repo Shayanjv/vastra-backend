@@ -40,6 +40,30 @@ outfitRoutes.delete(
   validateRequest({ params: savedOutfitIdParamsSchema }),
   deleteSavedOutfit
 );
+outfitRoutes.post(
+  "/history",
+  async (req, res) => {
+    res.status(501).json({
+      success: false,
+      message: "Save outfit to history not yet implemented",
+      error: "OUTFIT_HISTORY_NOT_IMPLEMENTED",
+      code: "OUTFIT_HISTORY_001",
+      timestamp: new Date().toISOString()
+    });
+  }
+);
+outfitRoutes.get(
+  "/suggest/:occasionId",
+  async (req, res) => {
+    res.status(501).json({
+      success: false,
+      message: "Occasion-based outfit suggestions not yet implemented",
+      error: "OUTFIT_SUGGEST_OCCASION_NOT_IMPLEMENTED",
+      code: "OUTFIT_SUGGEST_OCCASION_001",
+      timestamp: new Date().toISOString()
+    });
+  }
+);
 
 // Backward-compatible scaffold routes
 outfitRoutes.get("/", validateRequest({ query: paginationQuerySchema }), listOutfitRecords);

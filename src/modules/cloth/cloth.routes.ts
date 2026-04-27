@@ -41,5 +41,18 @@ clothRoutes.post(
   validateRequest({ params: clothIdParamsSchema, body: clothWashSchema }),
   recordClothWash
 );
+clothRoutes.post(
+  "/:id/detect-ai",
+  validateRequest({ params: clothIdParamsSchema }),
+  async (req, res) => {
+    res.status(501).json({
+      success: false,
+      message: "AI cloth detection not yet implemented",
+      error: "CLOTH_DETECT_AI_NOT_IMPLEMENTED",
+      code: "CLOTH_DETECT_AI_001",
+      timestamp: new Date().toISOString()
+    });
+  }
+);
 
 export default clothRoutes;
