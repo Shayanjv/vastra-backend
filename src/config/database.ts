@@ -4,14 +4,12 @@ import pg from "pg";
 import environment from "./environment";
 import logger from "../utils/logger.util";
 
-const requiresSsl = environment.DATABASE_URL.includes("sslmode=require") ||
-  environment.NODE_ENV === "production";
-
 const pool = new pg.Pool({
   connectionString: environment.DATABASE_URL,
-  ssl: requiresSsl
-    ? { rejectUnauthorized: false }
-    : undefined
+  ssl: {
+    rejectUnauthorized: false
+  },
+  max: 25
 });
 
 const adapter = new PrismaPg(pool);
